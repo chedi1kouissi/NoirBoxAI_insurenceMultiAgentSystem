@@ -1,0 +1,9 @@
+flask
+flask-session 
+google-generativeai 
+markdown
+pandas
+PyPDF2
+flask_cors
+
+$env:GEMINI_API_KEY = "AIzaSyBgt9J64_EpZbL6LsmPT14awcfjoTgEFqU"
