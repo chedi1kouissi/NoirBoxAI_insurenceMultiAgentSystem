@@ -1,126 +1,174 @@
-# Multi-Agent Driving Analysis System
+Multi-Agent Driving Analysis System
+A coordinated multi-agent system powered by Google Gemini 2.0 Flash that analyzes real-time driving conditions—factoring in road type, weather, and road geometry—to provide intelligent speed recommendations and safety assessments.
 
-A coordinated multi-agent system that uses Google's Gemini 2.0 Flash to analyze driving conditions, road types, weather, and provide speed recommendations.
+🚗 Designed for in-vehicle IoT integration:
+This system is intended to be deployed on IoT devices installed in vehicles. It enables insurance companies to evaluate driver behavior, promote responsible driving, and build accurate driver scoring models. Additional behavioral scoring features will be added in future versions.
 
-## Overview
+🚦 Overview
+This modular system integrates three intelligent agents working in coordination:
 
-This system combines three specialized AI agents:
+Road Type Agent
+Identifies road categories—city, rural, or highway—based on GPS coordinates and road width.
 
-1. **Road Type Agent**: Determines the type of road at specific GPS coordinates (highway, rural, or city)
-2. **Weather Agent**: Identifies the location name and current weather conditions
-3. **Decision Agent**: Evaluates if the current speed is appropriate for the road type and weather conditions
+Weather Agent
+Converts coordinates to a location name and fetches current weather conditions using web search and APIs.
 
-The system coordinates these agents to provide a comprehensive driving analysis, including speed recommendations and safety assessments.
+Decision Agent
+Assesses whether the current speed is appropriate based on:
 
-## Requirements
+Detected road type
 
-- Python 3.7+
-- Google Gemini API key
-- Required packages:
-  - `google-genai`
-  - `requests`
+Weather status
 
-## Installation
+Road geometry (optional width input)
 
-1. Clone this repository
-2. Install required packages:
-   ```
-   pip install -r requirements.txt
-   ```
-3. Set up your Gemini API key using one of these methods:
-   
-   **Option 1:** Set as an environment variable:
-   ```
-   # On Windows
-   set GEMINI_API_KEY=your-api-key-here
-   
-   # On macOS/Linux
-   export GEMINI_API_KEY=your-api-key-here
-   ```
-   
-   **Option 2:** Pass directly to the CLI:
-   ```
-   python cli.py --api-key="your-api-key-here" --lat 36.7374 --lon 10.3823
-   ```
+Customizable safety thresholds
 
-## Usage
+Together, they form a real-time assistant for driving safety analysis and speed compliance.
 
-### Command Line Interface
+📦 Requirements
+Python 3.7+
 
-The system includes a CLI for easy interaction:
+Google Gemini API key
 
-```
+Dependencies:
+
+google-genai
+
+requests
+
+🚀 Installation
+Clone the repository:
+
+bash
+Copier
+Modifier
+git clone https://github.com/yourusername/multi-agent-driving-analysis.git
+cd multi-agent-driving-analysis
+Install required packages:
+
+bash
+Copier
+Modifier
+pip install -r requirements.txt
+Set up your Gemini API key:
+
+Option 1: Environment variable
+
+bash
+Copier
+Modifier
+# Windows
+set GEMINI_API_KEY=your-api-key
+
+# macOS/Linux
+export GEMINI_API_KEY=your-api-key
+Option 2: CLI parameter
+
+bash
+Copier
+Modifier
+python cli.py --api-key="your-api-key" --lat 36.7374 --lon 10.3823
+🧪 Usage
+🔧 Command Line Interface
+Run the system directly from the terminal:
+
+bash
+Copier
+Modifier
 python cli.py --lat 36.7374 --lon 10.3823 --speed 85 --width 15
-```
-
 Options:
-- `--lat`: Latitude coordinate (default: 36.7374)
-- `--lon`: Longitude coordinate (default: 10.3823)
-- `--speed`: Current speed in km/h (default: 80)
-- `--width`: Road width in meters (optional, default: 15)
-- `--api-key`: Gemini API key (defaults to GEMINI_API_KEY environment variable)
-- `--json`: Output results in JSON format
 
-### Python API
+--lat: Latitude (default: 36.7374)
 
-You can also use the system programmatically:
+--lon: Longitude (default: 10.3823)
 
-```python
+--speed: Current speed in km/h (default: 80)
+
+--width: Optional road width in meters (default: 15)
+
+--api-key: Gemini API key (overrides environment variable)
+
+--json: Output results in JSON format
+
+🐍 Python API
+Use the system within your own Python scripts:
+
+python
+Copier
+Modifier
 from multi_agent_system import MultiAgentSystem
 
-# Initialize the system
 system = MultiAgentSystem(api_key="your-api-key")
 
-# Analyze driving conditions
-analysis = system.analyze_driving_conditions(
+result = system.analyze_driving_conditions(
     lat=36.7374,
     lon=10.3823,
     speed=85,
     road_width=15
 )
 
-# Print formatted results
-system.print_analysis(analysis)
-```
+system.print_analysis(result)
+⚙️ Configuration
+Tune system logic in config.py:
 
-## Configuration
+Default coordinates and speed
 
-System parameters can be customized in `config.py`, including:
-- Default coordinates and driving parameters
-- Speed limits for different road types
-- Weather penalty factors
-- Road width classification thresholds
+Speed limits per road type
 
-## Components
+Weather impact penalties
 
-### 1. Road Type Agent (`road_type_agent.py`)
+Road width classification
 
-Uses Gemini 2.0 Flash with Google Search to classify roads at specific GPS coordinates as:
-- Highway (wide roads, typically 20+ meters)
-- Rural (medium width roads, typically 8-20 meters)
-- City (narrow roads, typically less than 8 meters)
+🧠 System Architecture
+road_type_agent.py
+Uses Gemini 2.0 Flash + Google Search
 
-Can also estimate road type based on width when provided.
+Classifies roads as:
 
-### 2. Weather Agent (`weather_agent.py`)
+Highway: Typically ≥20m wide
 
-Performs reverse geocoding to convert GPS coordinates to location names, then fetches current weather conditions for that location.
+Rural: ~8–20m wide
 
-### 3. Decision Agent (`decision_making_agent.py`)
+City: ≤8m wide
 
-Evaluates if the current speed is safe based on:
-- Road type (city, rural, highway)
-- Weather conditions (applies penalties for adverse weather)
-- Current speed
+Falls back to road width if satellite classification is unavailable
 
-Provides safety assessments and recommendations.
+weather_agent.py
+Uses reverse geocoding (OpenStreetMap Nominatim)
 
-## License
+Queries weather using location names
 
-This project is MIT licensed. See LICENSE file for details.
+Extracts weather status (e.g., sunny, rainy) for safety evaluation
 
-## Acknowledgments
+decision_making_agent.py
+Integrates road type, speed, and weather to:
 
-- Uses Google's Gemini 2.0 Flash AI models
-- Weather data via Google Search
-- Reverse geocoding via OpenStreetMap Nominatim 
+Determine safety of current speed
+
+Apply penalties for adverse weather
+
+Recommend safer speeds if necessary
+
+🧭 Future Plans
+Driver scoring system based on:
+
+Speed compliance trends
+
+Weather-aware risk behavior
+
+Road-type adaptation
+
+Integration with insurance dashboards
+
+Real-time feedback to drivers via IoT interfaces
+
+📄 License
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+🙏 Acknowledgments
+Built with Google Gemini 2.0 Flash
+
+Weather and location data via Google Search + OpenStreetMap Nominatim
+
+Inspired by smart mobility and insurtech innovation
